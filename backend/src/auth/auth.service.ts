@@ -1,30 +1,104 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from './dtos/sign-in.dto';
+import * as bcrypt from 'bcrypt';
+
+// Banco de dados em memória para desenvolvimento
+const users = [
+  {
+    id: '1',
+    email: 'admin@bladebilling.com',
+    password: '$2b$10$rKvVJvMZO6PH5zLfY4qXEuYlXZGXXZKZK.HZKZKZKZKZKZKZKZa', // senha: admin123
+    name: 'Administrador',
+  },
+];
 
 @Injectable()
 export class AuthService {
+  constructor(private jwtService: JwtService) {}
+
   async register(signInDto: SignInDto) {
-    // TODO: Implement registration logic
-    // 1. Validate email doesn't exist
-    // 2. Hash password
-    // 3. Save user to database
-    // 4. Return JWT token
+    const { email, password } = signInDto;
+
+    // Verificar se usuário já existe
+    const userExists = users.find((u) => u.email === email);
+    if (userExists) {
+      throw new BadRequestException('Email já cadastrado');
+    }
+
+    // Hash da senha
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Criar novo usuário
+    const newUser = {
+      id: Date.now().toString(),
+      email,
+      password: hashedPassword,
+      name: email.split('@')[0],
+    };
+
+    users.push(newUser);
+
+    // Gerar JWT token
+    const token = this.jwtService.sign({
+      sub: newUser.id,
+      email: newUser.email,
+      name: newUser.name,
+    });
+
     return {
-      message: 'User registered successfully',
-      email: signInDto.email,
+      message: 'Usuário registrado com sucesso',
+      token,
+      user: {
+        id: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+      },
     };
   }
 
   async login(signInDto: SignInDto) {
-    // TODO: Implement login logic
-    // 1. Find user by email
-    // 2. Verify password
-    // 3. Generate JWT token
-    // 4. Return token
+    const { email, password } = signInDto;
+
+    // Encontrar usuário por email
+    const user = users.find((u) => u.email === email);
+
+    if (!user) {
+      throw new UnauthorizedException('Email ou senha inválidos');
+    }
+
+    // Verificar senha
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Email ou senha inválidos');
+    }
+
+    // Gerar JWT token
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+    });
+
     return {
-      message: 'Login successful',
-      email: signInDto.email,
-      token: 'jwt_token_placeholder',
+      message: 'Login realizado com sucesso',
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
     };
+  }
+
+  async validateUser(userId: string) {
+    const user = users.find((u) => u.id === userId);
+    if (!user) {
+      return null;
+    }
+    const { password, ...result } = user;
+    return result;
   }
 }
