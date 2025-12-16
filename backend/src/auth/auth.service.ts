@@ -3,12 +3,12 @@ import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from './dtos/sign-in.dto';
 import * as bcrypt from 'bcrypt';
 
-// Banco de dados em memória para desenvolvimento
+// Simulação de banco de dados em memória
 const users = [
   {
     id: '1',
     email: 'admin@bladebilling.com',
-    password: '$2b$10$rKvVJvMZO6PH5zLfY4qXEuYlXZGXXZKZK.HZKZKZKZKZKZKZKZa', // senha: admin123
+    password: '$2b$10$rKvVJvMZO6PH5zLfY4qXEuYlXZGXXZKZK.HZKZKZKZKZKZKZKZa', // admin123
     name: 'Administrador',
   },
 ];

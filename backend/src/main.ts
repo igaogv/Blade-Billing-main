@@ -19,8 +19,8 @@ async function bootstrap() {
     origin: [
       'http://localhost:5173',
       'http://localhost:3001',
+      'http://localhost:3000',
       'https://blade-billing-frontend.vercel.app',
-      'https://blade-billing-frontend-*.vercel.app',
       /\.vercel\.app$/,
     ],
     credentials: true,
@@ -34,11 +34,12 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
-  console.log(`⚡ Blade Billing API running on: http://localhost:${port}`);
+  console.log(`\n⚡ Blade Billing API`);
+  console.log(`⚡ Running on: http://localhost:${port}`);
   console.log(`⚡ API Prefix: /api`);
   console.log(`⚡ Health check: http://localhost:${port}/api/health`);
   console.log(`⚡ Auth endpoints:`);
   console.log(`   - POST /api/auth/register`);
-  console.log(`   - POST /api/auth/login`);
+  console.log(`   - POST /api/auth/login\n`);
 }
 bootstrap();

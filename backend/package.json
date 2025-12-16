@@ -2,7 +2,7 @@
   "name": "blade-billing-backend",
   "version": "1.0.0",
   "description": "Blade Billing Backend API",
-  "author": "igaogv",
+  "author": "Igor Mendes",
   "private": true,
   "license": "MIT",
   "scripts": {
@@ -14,7 +14,11 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.0",
