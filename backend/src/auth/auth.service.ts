@@ -3,8 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { SignInDto } from './dtos/sign-in.dto';
 import * as bcrypt from 'bcrypt';
 
-// Simulação de banco de dados em memória
-const users = [
+// Importar Supabase quando em produção
+let supabaseUsers = [
   {
     id: '1',
     email: 'admin@bladebilling.com',
@@ -21,7 +21,7 @@ export class AuthService {
     const { email, password } = signInDto;
 
     // Verificar se usuário já existe
-    const userExists = users.find((u) => u.email === email);
+    const userExists = supabaseUsers.find((u) => u.email === email);
     if (userExists) {
       throw new BadRequestException('Email já cadastrado');
     }
@@ -38,7 +38,7 @@ export class AuthService {
       name: email.split('@')[0],
     };
 
-    users.push(newUser);
+    supabaseUsers.push(newUser);
 
     // Gerar JWT token
     const token = this.jwtService.sign({
@@ -61,8 +61,8 @@ export class AuthService {
   async login(signInDto: SignInDto) {
     const { email, password } = signInDto;
 
-    // Encontrar usuário por email
-    const user = users.find((u) => u.email === email);
+    // Encontrar usuário
+    const user = supabaseUsers.find((u) => u.email === email);
 
     if (!user) {
       throw new UnauthorizedException('Email ou senha inválidos');
@@ -94,7 +94,7 @@ export class AuthService {
   }
 
   async validateUser(userId: string) {
-    const user = users.find((u) => u.id === userId);
+    const user = supabaseUsers.find((u) => u.id === userId);
     if (!user) {
       return null;
     }
